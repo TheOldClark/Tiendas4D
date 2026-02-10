@@ -2,43 +2,31 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Bodega Impulmarc - AR 4D</title>
-    
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bodega Impulmarc - Visor 3D</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
     <style>
         :root {
             --primary-color: #00d1b2;
             --bg-color: #121212;
+            --card-bg: #1e1e1e;
         }
 
         body { 
             margin: 0; 
             font-family: 'Inter', system-ui, sans-serif; 
-            background-color: transparent; 
+            background-color: var(--bg-color); 
             color: white;
-            overflow: hidden;
-        }
-
-        /* Capa de Interfaz sobre la cámara */
-        .ui-overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; /* Permite tocar el 3D a través de esto */
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            z-index: 10;
+            height: 100vh;
+            overflow: hidden;
         }
 
         header {
             padding: 20px;
             text-align: center;
-            background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
         }
 
         h1 {
@@ -47,103 +35,88 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--primary-color);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            margin: 0 20px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: radial-gradient(circle, #333 0%, #121212 100%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            /* Ajustes para que el color se vea real */
+            --poster-color: transparent;
+        }
+
+        #ar-button {
+            background-color: var(--primary-color);
+            border-radius: 30px;
+            border: none;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            color: #121212;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,209,178,0.3);
         }
 
         footer {
             padding: 20px;
             text-align: center;
-            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         .badge {
             display: inline-block;
             padding: 4px 12px;
-            background: var(--primary-color);
-            color: #121212;
+            background: #333;
             border-radius: 20px;
             font-size: 0.7rem;
-            font-weight: bold;
             margin-top: 5px;
-        }
-
-        /* Pantalla de carga */
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 100;
         }
     </style>
 </head>
-
 <body>
 
-    <div id="loader">
-        <p>Iniciando Cámara y Materiales...</p>
-    </div>
+    <header>
+        <h1>Tienda 4D</h1>
+        <p style="margin-top: 5px; font-size: 0.9rem; opacity: 0.7;">Impulmarc - Logística/TI v1.0</p>
+    </header>
 
-    <div class="ui-overlay">
-        <header>
-            <h1>Tienda 4D</h1>
-            <p style="margin-top: 5px; font-size: 0.8rem; opacity: 0.9;">Logística/TI v1.0 - Clark</p>
-        </header>
-
-        <footer>
-            <div class="badge">APUNTA AL MARCADOR HIRO</div>
-            <p style="font-size: 0.8rem; margin-top: 10px;">Usa dos dedos para rotar o escalar</p>
-        </footer>
-    </div>
-
-    <a-scene 
-        embedded 
-        arjs="sourceType: webcam; debugUIEnabled: false;" 
-        renderer="colorManagement: true; logarithmicDepthBuffer: true; antialias: true;"
-        gesture-detector
-        vr-mode-ui="enabled: false">
-
-        <a-assets>
-            <a-asset-item id="modelo" src="modelos.glb"></a-asset-item>
-        </a-assets>
-
-        <a-marker 
-            preset="hiro" 
-            raycaster="objects: .clickable" 
-            emitevents="true" 
-            cursor="fuse: false; rayOrigin: mouse;"
-            id="marker">
+    <div class="viewer-container">
+        <model-viewer 
+            src="modelos.glb" 
+            ar 
+            ar-modes="webxr scene-viewer quick-look" 
+            camera-controls 
+            shadow-intensity="1" 
+            exposure="1.2" 
+            environment-image="neutral"
+            tone-mapping="commerce"
+            id="viewer">
             
-            <a-entity
-                id="modelo-tienda"
-                gltf-model="#modelo"
-                position="0 0 0"
-                scale="0 0 0" 
-                class="clickable"
-                gesture-handler
-                animation="property: scale; to: 0.05 0.05 0.05; dur: 1200; easing: easeOutBack; startEvents: targetfound">
-            </a-entity>
-        </a-marker>
+            <button slot="ar-button" id="ar-button">
+                👋 VER EN MI ESPACIO (AR)
+            </button>
+        </model-viewer>
+    </div>
 
-        <a-entity light="type: ambient; intensity: 1.0;"></a-entity>
-        <a-entity light="type: directional; intensity: 0.8;" position="1 4 3"></a-entity>
-
-        <a-entity camera></a-entity>
-    </a-scene>
-
-    <script>
-        // Lógica para ocultar el cargador y activar la animación
-        const marker = document.querySelector('#marker');
-        const entity = document.querySelector('#modelo-tienda');
-        const loader = document.querySelector('#loader');
-
-        marker.addEventListener('markerFound', () => {
-            entity.emit('targetfound');
-            loader.style.display = 'none'; // Oculta el cargador al detectar el marcador
-        });
-
-        // Ocultar cargador tras 5 segundos si no detecta nada (por si acaso)
-        setTimeout(() => { loader.style.display = 'none'; }, 5000);
-    </script>
+    <footer>
+        <p>Desarrollado por <strong>Martín</strong></p>
+        <div class="badge">PROTOTIPO FUNCIONAL</div>
+    </footer>
 
 </body>
 </html>
