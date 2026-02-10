@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Visor AR - Tiendas 4D </title>
+    
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    
+    <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
+
+    <style>
+      .arjs-loader {
+        height: 100%; width: 100%; position: absolute; 
+        top: 0; left: 0; background-color: rgba(0, 0, 0, 0.8);
+        display: flex; justify-content: center; align-items: center; z-index: 999;
+      }
+      .arjs-loader div { text-align: center; color: white; font-family: sans-serif; }
+    </style>
+  </head>
+
+  <body style="margin: 0; overflow: hidden;">
+    <div class="arjs-loader">
+      <div>Cargando Tienda 3D...</div>
+    </div>
+
+    <a-scene 
+      embedded 
+      arjs="sourceType: webcam; debugUIEnabled: false;" 
+      renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
+      gesture-detector
+      id="scene">
+
+      <a-assets>
+        <a-asset-item id="modelo" src="modelo.glb"></a-asset-item>
+      </a-assets>
+
+      <a-marker 
+        preset="hiro" 
+        raycaster="objects: .clickable"
+        emitevents="true" 
+        cursor="fuse: false; rayOrigin: mouse;"
+        id="marker">
+        
+        <a-entity
+          id="modelo-tienda"
+          gltf-model="#modelo"
+          position="0 0 0"
+          scale="0.05 0.05 0.05" 
+          class="clickable"
+          gesture-handler="minScale: 0.01; maxScale: 2;"
+          rotation="0 0 0">
+        </a-entity>
+      </a-marker>
+
+      <a-entity light="type: ambient; intensity: 1.0;"></a-entity>
+      <a-entity light="type: directional; intensity: 0.8;" position="1 4 3"></a-entity>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      // Ocultar el cargador cuando la escena esté lista
+      window.addEventListener("arjs-gestures", (e) => {
+        document.querySelector(".arjs-loader").style.display = "none";
+      });
+    </script>
+  </body>
+</html>
