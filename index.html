@@ -1,70 +1,123 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Visor AR - Tiendas 4D </title>
-    
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    
-    <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
-
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bodega Impulmarc - Visor 3D</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
     <style>
-      .arjs-loader {
-        height: 100%; width: 100%; position: absolute; 
-        top: 0; left: 0; background-color: rgba(0, 0, 0, 0.8);
-        display: flex; justify-content: center; align-items: center; z-index: 999;
-      }
-      .arjs-loader div { text-align: center; color: white; font-family: sans-serif; }
-    </style>
-  </head>
+        :root {
+            --primary-color: #00d1b2;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+        }
 
-  <body style="margin: 0; overflow: hidden;">
-    <div class="arjs-loader">
-      <div>Cargando Tienda 3D...</div>
+        body { 
+            margin: 0; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background-color: var(--bg-color); 
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Encabezado */
+        header {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        /* Contenedor del Visor */
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            margin: 0 20px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: radial-gradient(circle, #333 0%, #121212 100%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            --poster-color: transparent;
+        }
+
+        /* Botón de AR (opcional por si alguien quiere probarlo) */
+        #ar-button {
+            background-color: var(--primary-color);
+            border-radius: 30px;
+            border: none;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            color: #121212;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Pie de página */
+        footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #333;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Tienda 4D </h1>
+        <p style="margin-top: 5px; font-size: 0.9rem; opacity: 0.7;">Impulmarc - Logística/TI v1.0</p>
+    </header>
+
+    <div class="viewer-container">
+        <model-viewer 
+            src="modelo.glb" 
+            ar 
+            ar-modes="webxr scene-viewer quick-look" 
+            camera-controls 
+            auto-rotate 
+            shadow-intensity="2" 
+            exposure="1"
+            environment-image="neutral">
+            
+            <button slot="ar-button" id="ar-button">
+                <span></span> PROBAR AR
+            </button>
+        </model-viewer>
     </div>
 
-    <a-scene 
-      embedded 
-      arjs="sourceType: webcam; debugUIEnabled: false;" 
-      renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
-      gesture-detector
-      id="scene">
+    <footer>
+        <p>Desarrollado por <strong>Martín</strong></p>
+        <div class="badge">PROTOTIPO FUNCIONAL</div>
+    </footer>
 
-      <a-assets>
-        <a-asset-item id="modelo" src="modelo.glb"></a-asset-item>
-      </a-assets>
-
-      <a-marker 
-        preset="hiro" 
-        raycaster="objects: .clickable"
-        emitevents="true" 
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="marker">
-        
-        <a-entity
-          id="modelo-tienda"
-          gltf-model="#modelo"
-          position="0 0 0"
-          scale="0.05 0.05 0.05" 
-          class="clickable"
-          gesture-handler="minScale: 0.01; maxScale: 2;"
-          rotation="0 0 0">
-        </a-entity>
-      </a-marker>
-
-      <a-entity light="type: ambient; intensity: 1.0;"></a-entity>
-      <a-entity light="type: directional; intensity: 0.8;" position="1 4 3"></a-entity>
-
-      <a-entity camera></a-entity>
-    </a-scene>
-
-    <script>
-      // Ocultar el cargador cuando la escena esté lista
-      window.addEventListener("arjs-gestures", (e) => {
-        document.querySelector(".arjs-loader").style.display = "none";
-      });
-    </script>
-  </body>
+</body>
 </html>
